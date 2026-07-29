@@ -1,3 +1,10 @@
+import { db } from "./firebase.js";
+
+import {
+    doc,
+    setDoc
+} from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+
 /* ==========================================
    PANEL DE ADMINISTRACIÓN
    TANATORIO SAN BLAS
@@ -54,3 +61,35 @@ function cargarFormulario(){
 //======================================
 
 seleccionarSala(0);
+
+//======================================
+// GUARDAR EN FIREBASE
+//======================================
+
+document.getElementById("guardar").addEventListener("click", guardarServicio);
+
+async function guardarServicio(){
+
+    const servicio = {
+
+        nombre: document.getElementById("nombre").value,
+
+        parroquia: document.getElementById("parroquia").value,
+
+        misa: document.getElementById("misa").value,
+
+        fondo: document.getElementById("fondo").value,
+
+        colorTexto: document.getElementById("colorTexto").value,
+
+        activo: document.getElementById("activo").checked,
+
+        fotos: []
+
+    };
+
+    await setDoc(doc(db, "salas", "sala" + (salaActual + 1)), servicio);
+
+    alert("Servicio guardado correctamente.");
+
+}

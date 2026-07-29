@@ -1,0 +1,244 @@
+/* ==========================================
+   TANATORIO SAN BLAS
+   ESTILOS - Versión 2.1
+========================================== */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+
+    font-family: Georgia, serif;
+
+    background-size:cover;
+    background-position:center;
+    background-repeat:no-repeat;
+
+    width:100vw;
+    height:100vh;
+
+    overflow:hidden;
+
+    transition:all .8s ease;
+
+}
+
+/*=========================================
+CABECERA
+=========================================*/
+
+header{
+
+    position:absolute;
+
+    top:10px;
+    left:40px;
+    right:40px;
+
+    display:flex;
+
+    justify-content:space-between;
+    align-items:flex-start;
+
+    z-index:1000;
+
+}
+
+#logo{
+
+    height:125px;
+
+    object-fit:contain;
+
+}
+
+#reloj{
+
+    font-size: 42px;
+
+    font-weight:bold;
+
+}
+
+/*=========================================
+CONTENIDO
+=========================================*/
+
+main{
+
+    width:100%;
+    height:100%;
+
+    display:flex;
+
+    justify-content:center;
+    align-items:center;
+
+    gap:90px;
+
+}
+
+/*=========================================
+FOTO
+=========================================*/
+
+.foto{
+
+    width:360px;
+
+    display:flex;
+
+    justify-content:center;
+
+    margin-top:90px;
+
+}
+
+#visor{
+
+    width:340px;
+    height:460px;
+
+    object-fit:cover;
+
+    border:5px solid white;
+
+    border-radius:15px;
+
+    box-shadow:0 10px 30px rgba(0,0,0,.35);
+
+}
+
+/*=========================================
+DATOS
+=========================================*/
+
+.datos{
+
+    width:720px;
+
+}
+
+h1{
+
+    font-size:74px;
+
+    margin-top:60px;
+
+    margin-bottom:45px;
+
+}
+
+.bloque{
+
+    margin-bottom:45px;
+
+}
+
+h2{
+
+    font-size:34px;
+
+    letter-spacing:2px;
+
+    margin-bottom:10px;
+
+    text-transform:uppercase;
+
+}
+
+p{
+
+    font-size:30px;
+
+    line-height:1.5;
+
+}
+
+
+/*=========================================
+COLORES
+=========================================*/
+
+.texto-blanco{
+
+    color:white;
+
+}
+
+.texto-blanco h1,
+.texto-blanco h2,
+.texto-blanco p,
+.texto-blanco #reloj{
+
+    color:white;
+
+}
+
+.texto-negro{
+
+    color:#222;
+
+}
+
+.texto-negro h1,
+.texto-negro h2,
+.texto-negro p,
+.texto-negro #reloj{
+
+    color:#222;
+
+}
+
+/*=========================================
+FUNDIDOS
+=========================================*/
+
+.fade-out{
+
+    opacity:0;
+
+}
+
+.fade-in{
+
+    opacity:1;
+
+}
+
+/*=========================================
+PANTALLA DE TRANSICIÓN
+=========================================*/
+
+#pantallaTransicion{
+
+    position:fixed;
+
+    top:0;
+    left:0;
+
+    width:100vw;
+    height:100vh;
+
+    display:none;
+
+    justify-content:center;
+    align-items:center;
+
+    background:black;
+
+    z-index:500;
+
+}
+
+#pantallaTransicion img{
+
+    width:100%;
+    height:100%;
+
+    object-fit:cover;
+
+}

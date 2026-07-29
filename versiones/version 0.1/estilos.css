@@ -1,0 +1,97 @@
+*{
+
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+
+}
+
+body{
+
+    background-image: url("imagenes/fondo_az.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+
+    font-family: Georgia, serif;
+
+}
+
+.pantalla{
+
+    width:100vw;
+    height:100vh;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:80px;
+
+}
+
+.foto img{
+
+    width:420px;
+    height:560px;
+
+    object-fit:cover;
+
+    border-radius:12px;
+    border:6px solid white;
+
+    box-shadow:0 15px 35px rgba(0,0,0,.30);
+
+}
+.informacion{
+
+    width:500px;
+
+}
+
+h1{
+
+    font-size:58px;
+
+    color:#2b2b2b;
+
+    margin-bottom:50px;
+
+}
+
+p{
+
+    font-size:28px;
+
+    color:#555;
+
+    line-height:1.5;
+
+}
+
+strong{
+
+    color:#222;
+
+}
+.texto-blanco {
+    color: white;
+}
+
+.texto-blanco h1,
+.texto-blanco p,
+.texto-blanco strong {
+    color: white;
+}
+
+.texto-negro {
+    color: #222;
+}
+
+.texto-negro h1,
+.texto-negro p,
+.texto-negro strong {
+    color: #222;
+}

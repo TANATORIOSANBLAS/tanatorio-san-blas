@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Panel de Administración</title>
+
+    <link rel="stylesheet" href="admin.css">
+
+</head>
+
+<body>
+
+    <div class="contenedor">
+
+        <h1>Tanatorio San Blas</h1>
+
+        <div class="salas">
+
+            <button id="btnSala1">SALA 1</button>
+            <button id="btnSala2">SALA 2</button>
+
+        </div>
+
+        <div class="formulario">
+
+            <label>Nombre del fallecido</label>
+            <input type="text" id="nombre">
+
+            <label>Parroquia</label>
+            <input type="text" id="parroquia">
+
+            <label>Misa funeral</label>
+            <input type="text" id="misa">
+
+            <label>Fondo</label>
+
+            <select id="fondo">
+                <option value="imagenes/fondos/fondo_az.png">Azul</option>
+                <option value="imagenes/fondos/fondo_bn.png">Blanco</option>
+                <option value="imagenes/fondos/fondo_rj.png">Rojo</option>
+                <option value="imagenes/fondos/fondo_igl.png">Iglesia</option>
+            </select>
+
+            <label>Color del texto</label>
+
+            <select id="colorTexto">
+                <option value="blanco">Blanco</option>
+                <option value="negro">Negro</option>
+            </select>
+
+            <label>Fotografías</label>
+
+            <input type="file" id="fotos" multiple>
+
+            <label>
+
+                <input type="checkbox" id="activo" checked>
+
+                Mostrar servicio
+
+            </label>
+
+        </div>
+
+    </div>
+
+<script src="datos.js"></script>
+<script src="admin.js"></script>
+
+</body>
+
+</html>

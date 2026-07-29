@@ -88,8 +88,19 @@ async function guardarServicio(){
 
     };
 
+    try {
+
     await setDoc(doc(db, "salas", "sala" + (salaActual + 1)), servicio);
 
+    console.log("Guardado correctamente");
+
     alert("Servicio guardado correctamente.");
+
+}
+catch(error){
+
+    console.error(error);
+
+    alert(error.message);
 
 }

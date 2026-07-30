@@ -3,6 +3,15 @@
    Versión 2.0
 ========================================== */
 
+import { db } from "./firebase.js";
+
+import {
+    collection,
+    onSnapshot
+} from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+
+let servicios = [];
+
 let escena = 0;
 
 const secuencia = [
@@ -30,6 +39,7 @@ function mostrarServicio() {
     setTimeout(() => {
 
         const servicio = servicios[servicioActual];
+        if (!servicio) return;
 
         // Datos
         document.getElementById("nombre").textContent = servicio.nombre;
@@ -182,7 +192,9 @@ function actualizarReloj() {
 
 function siguienteFoto() {
 
-    const servicio = servicios[servicioActual];
+   const servicio = servicios[servicioActual];
+
+    if (!servicio) return;
 
     fotoActual++;
 
@@ -216,26 +228,57 @@ function siguienteServicio() {
     mostrarServicio();
 
 }
+//======================================
+// FIREBASE
+//======================================
+
+onSnapshot(collection(db, "salas"), (snapshot) => {
+
+    servicios = [];
+
+    snapshot.forEach((doc) => {
+
+        const servicio = doc.data();
+
+        if (servicio.activo) {
+
+            servicio.sala = doc.id === "sala1" ? "Sala 1" : "Sala 2";
+
+            servicios.push(servicio);
+
+        }
+
+    });
+
+    if (servicios.length === 0) return;
+
+    servicioActual = 0;
+    fotoActual = 0;
+    escena = 0;
+
+    mostrarServicio();
+
+});
 
 //======================================
-// INICIO
+// RELOJ
 //======================================
-
-mostrarServicio();
 
 actualizarReloj();
 
 setInterval(actualizarReloj, 1000);
 
 //======================================
-// MOTOR DE ESCENAS
+// MOTOR
 //======================================
-
-mostrarServicio();
 
 setInterval(() => {
 
-    siguienteEscena();
+    if (servicios.length > 0) {
+
+        siguienteEscena();
+
+    }
 
 }, 8000);
 

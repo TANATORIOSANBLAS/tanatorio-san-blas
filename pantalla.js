@@ -20,6 +20,7 @@ let servicioActual = 0;
 let fotoActual = 0;
 let escena = 0;
 
+let salaMostradaId = null;
 
 //======================================
 // SECUENCIA DE PANTALLAS
@@ -47,10 +48,11 @@ function mostrarServicio() {
 
     if (!servicio) return;
 
+    salaMostradaId = servicio.id;
 
     document.body.classList.add("fade-out");
 
-
+    
     setTimeout(() => {
 
         // Comprobamos otra vez por seguridad
@@ -321,89 +323,117 @@ function actualizarReloj() {
 // FIREBASE - ESCUCHAR SALAS
 //======================================
 
-onSnapshot(
-    collection(db, "salas"),
-    (snapshot) => {
+onSnapshot(collection(db, "salas"), (snapshot) => {
 
-        const nuevosServicios = [];
+    const nuevosServicios = [];
 
 
-        snapshot.forEach((documento) => {
+    snapshot.forEach((documento) => {
 
-            const servicio =
-                documento.data();
-
-
-            // Solo mostramos servicios activos
-            if (servicio.activo === true) {
-
-                nuevosServicios.push({
-
-                    ...servicio,
-
-                    sala:
-                        documento.id === "sala1"
-                            ? "Sala 1"
-                            : "Sala 2"
-
-                });
-
-            }
-
-        });
+        const servicio = documento.data();
 
 
-        // Orden fijo: Sala 1 y Sala 2
-        nuevosServicios.sort((a, b) => {
+        // Solo añadimos las salas activas
+        if (servicio.activo === true) {
 
-            return a.sala.localeCompare(
-                b.sala
-            );
+            nuevosServicios.push({
 
-        });
+                ...servicio,
 
+                id: documento.id,
 
-        // Guardamos los servicios
-        servicios = nuevosServicios;
+                sala:
+                    documento.id === "sala1"
+                        ? "Sala 1"
+                        : "Sala 2"
 
-
-        // Si no hay servicios
-        if (servicios.length === 0) {
-
-            ocultarTransicion();
-
-            return;
+            });
 
         }
 
-
-        // Evitar una posición inválida
-        if (
-            servicioActual >= servicios.length
-        ) {
-
-            servicioActual = 0;
-
-        }
+    });
 
 
-        // Si cambiaron los datos en Firebase,
-        // mostramos el servicio actual,
-        // pero NO reiniciamos constantemente
-        if (fotoActual >=
-            (servicios[servicioActual].fotos?.length || 1)
-        ) {
+    // Orden fijo: sala1 y después sala2
+    nuevosServicios.sort((a, b) => {
 
-            fotoActual = 0;
+        return a.id.localeCompare(b.id);
 
-        }
+    });
 
 
-        mostrarServicio();
+    // Guardamos los servicios nuevos
+    servicios = nuevosServicios;
+
+
+    // No hay ninguna sala activa
+    if (servicios.length === 0) {
+
+        servicioActual = 0;
+        fotoActual = 0;
+
+        ocultarTransicion();
+
+        return;
 
     }
 
-);
+
+    // Si todavía no había ninguna sala mostrada,
+    // empezamos por la primera
+    if (salaMostradaId === null) {
+
+        servicioActual = 0;
+
+    } else {
+
+        // Buscamos la sala que estábamos mostrando
+        const posicion = servicios.findIndex((servicio) => {
+
+            return servicio.id === salaMostradaId;
+
+        });
+
+
+        // Si esa sala sigue activa,
+        // mantenemos esa misma sala
+        if (posicion !== -1) {
+
+            servicioActual = posicion;
+
+        } else {
+
+            // Si se ha desactivado,
+            // mostramos la primera disponible
+            servicioActual = 0;
+
+            fotoActual = 0;
+            escena = 0;
+
+        }
+
+    }
+
+
+    // Comprobamos las fotos
+    const servicioActualFirebase =
+        servicios[servicioActual];
+
+
+    if (
+        !servicioActualFirebase.fotos ||
+        fotoActual >= servicioActualFirebase.fotos.length
+    ) {
+
+        fotoActual = 0;
+
+    }
+
+
+    // Actualizamos inmediatamente
+    mostrarServicio();
+
+});
 
 
 //======================================

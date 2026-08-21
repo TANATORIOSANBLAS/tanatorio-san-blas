@@ -1,6 +1,5 @@
 /* ==========================================
    TANATORIO SAN BLAS - MOTOR DE PANTALLA
-   Versión 2.0
 ========================================== */
 
 import { db } from "./firebase.js";
@@ -10,9 +9,21 @@ import {
     onSnapshot
 } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
 
+
+//======================================
+// VARIABLES
+//======================================
+
 let servicios = [];
 
+let servicioActual = 0;
+let fotoActual = 0;
 let escena = 0;
+
+
+//======================================
+// SECUENCIA DE PANTALLAS
+//======================================
 
 const secuencia = [
     null,
@@ -25,8 +36,6 @@ const secuencia = [
     santos
 ];
 
-let servicioActual = 0;
-let fotoActual = 0;
 
 //======================================
 // MOSTRAR SERVICIO
@@ -34,40 +43,95 @@ let fotoActual = 0;
 
 function mostrarServicio() {
 
+    const servicio = servicios[servicioActual];
+
+    if (!servicio) return;
+
+
     document.body.classList.add("fade-out");
+
 
     setTimeout(() => {
 
-        const servicio = servicios[servicioActual];
-        if (!servicio) return;
+        // Comprobamos otra vez por seguridad
+        const servicioActualizado = servicios[servicioActual];
 
-        // Datos
-        document.getElementById("nombre").textContent = servicio.nombre;
-        document.getElementById("parroquia").textContent = servicio.parroquia;
-        document.getElementById("misa").textContent = servicio.misa;
-        document.getElementById("sala").textContent = servicio.sala;
+        if (!servicioActualizado) return;
 
-        // Fotografía
-        document.getElementById("visor").src = servicio.fotos[fotoActual];
 
-        // Fondo
-        document.body.style.backgroundImage = `url('${servicio.fondo}')`;
+        // Ocultar transición
+        ocultarTransicion();
 
-        // Colores
+
+        // DATOS
+        document.getElementById("nombre").textContent =
+            servicioActualizado.nombre || "";
+
+        document.getElementById("parroquia").textContent =
+            servicioActualizado.parroquia || "";
+
+        document.getElementById("misa").textContent =
+            servicioActualizado.misa || "";
+
+        document.getElementById("sala").textContent =
+            servicioActualizado.sala || "";
+
+
+        // FOTOGRAFÍA
+        const visor = document.getElementById("visor");
+
+        if (
+            servicioActualizado.fotos &&
+            servicioActualizado.fotos.length > 0
+        ) {
+
+            if (
+                fotoActual >=
+                servicioActualizado.fotos.length
+            ) {
+
+                fotoActual = 0;
+
+            }
+
+            visor.src =
+                servicioActualizado.fotos[fotoActual];
+
+        } else {
+
+            visor.removeAttribute("src");
+
+        }
+
+
+        // FONDO
+        document.body.style.backgroundImage =
+            `url('${servicioActualizado.fondo}')`;
+
+
+        // COLORES
         document.body.classList.remove("texto-blanco");
         document.body.classList.remove("texto-negro");
 
-        if (servicio.colorTexto === "blanco") {
+
+        if (
+            servicioActualizado.colorTexto === "blanco"
+        ) {
 
             document.body.classList.add("texto-blanco");
-            document.getElementById("logo").src = "imagenes/logos/logob.png";
+
+            document.getElementById("logo").src =
+                "imagenes/logos/logob.png";
 
         } else {
 
             document.body.classList.add("texto-negro");
-            document.getElementById("logo").src = "imagenes/logos/logon.png";
+
+            document.getElementById("logo").src =
+                "imagenes/logos/logon.png";
 
         }
+
 
         document.body.classList.remove("fade-out");
         document.body.classList.add("fade-in");
@@ -75,81 +139,134 @@ function mostrarServicio() {
     }, 400);
 
 }
-//======================================
-// MOSTRAR TRANSICIÓN
-//======================================
-function mostrarTransicion(transicion){
 
-    document.getElementById("imagenTransicion").src = transicion.imagen;
 
-    if (transicion.color === "blanco") {
-
-        document.getElementById("logo").src = "imagenes/logos/logob.png";
-
-    } else {
-
-        document.getElementById("logo").src = "imagenes/logos/logon.png";
-
-    }
-
-    document.getElementById("pantallaTransicion").style.display = "flex";
-
-}
 //======================================
 // OCULTAR TRANSICIÓN
 //======================================
 
-function ocultarTransicion(){
+function ocultarTransicion() {
 
-    document.getElementById("pantallaTransicion").style.display = "none";
+    document.getElementById(
+        "pantallaTransicion"
+    ).style.display = "none";
 
 }
+
 
 //======================================
 // IMAGEN ALEATORIA
 //======================================
 
-function imagenAleatoria(grupo){
+function imagenAleatoria(grupo) {
 
-    return grupo[Math.floor(Math.random() * grupo.length)];
+    return grupo[
+        Math.floor(
+            Math.random() * grupo.length
+        )
+    ];
 
 }
+
 
 //======================================
 // MOSTRAR CATEGORÍA
 //======================================
 
-function mostrarCategoria(grupo){
+function mostrarCategoria(grupo) {
 
-    const transicion = imagenAleatoria(grupo);
+    if (!grupo || grupo.length === 0) return;
 
-    document.getElementById("imagenTransicion").src = transicion.imagen;
+
+    const transicion =
+        imagenAleatoria(grupo);
+
+
+    document.getElementById(
+        "imagenTransicion"
+    ).src = transicion.imagen;
+
 
     if (transicion.color === "blanco") {
 
-        document.getElementById("logo").src = "imagenes/logos/logob.png";
+        document.getElementById("logo").src =
+            "imagenes/logos/logob.png";
 
     } else {
 
-        document.getElementById("logo").src = "imagenes/logos/logon.png";
+        document.getElementById("logo").src =
+            "imagenes/logos/logon.png";
 
     }
 
-    document.getElementById("pantallaTransicion").style.display = "flex";
+
+    document.getElementById(
+        "pantallaTransicion"
+    ).style.display = "flex";
 
 }
+
+
+//======================================
+// SIGUIENTE SERVICIO
+//======================================
+
+function siguienteServicio() {
+
+    if (servicios.length === 0) return;
+
+
+    // Si solo hay una sala activa,
+    // seguimos siempre en ella
+    if (servicios.length === 1) {
+
+        servicioActual = 0;
+
+    } else {
+
+        // Si hay dos salas activas,
+        // pasamos a la siguiente
+        servicioActual++;
+
+
+        if (
+            servicioActual >= servicios.length
+        ) {
+
+            servicioActual = 0;
+
+        }
+
+    }
+
+
+    fotoActual = 0;
+
+
+    // Empezamos la nueva sala
+    // desde la primera escena
+    escena = 0;
+
+    mostrarServicio();
+
+}
+
 
 //======================================
 // SIGUIENTE ESCENA
 //======================================
 
-function siguienteEscena(){
+function siguienteEscena() {
+
+    if (servicios.length === 0) return;
+
 
     escena++;
 
-    if(escena >= secuencia.length){
 
-        escena = 0;
+    // Hemos terminado el ciclo completo
+    // de la sala actual
+    if (escena >= secuencia.length) {
 
         siguienteServicio();
 
@@ -157,19 +274,23 @@ function siguienteEscena(){
 
     }
 
-    if(secuencia[escena] === null){
 
-        ocultarTransicion();
+    const elemento = secuencia[escena];
+
+
+    // null = pantalla de información
+    if (elemento === null) {
 
         mostrarServicio();
 
-    }else{
+    } else {
 
-        mostrarCategoria(secuencia[escena]);
+        mostrarCategoria(elemento);
 
     }
 
 }
+
 
 //======================================
 // RELOJ
@@ -179,158 +300,130 @@ function actualizarReloj() {
 
     const ahora = new Date();
 
-    const horas = ahora.getHours().toString().padStart(2, "0");
-    const minutos = ahora.getMinutes().toString().padStart(2, "0");
+    const horas =
+        ahora.getHours()
+            .toString()
+            .padStart(2, "0");
 
-    document.getElementById("reloj").textContent = horas + ":" + minutos;
+    const minutos =
+        ahora.getMinutes()
+            .toString()
+            .padStart(2, "0");
 
-}
 
-//======================================
-// CAMBIAR FOTO
-//======================================
-
-function siguienteFoto() {
-
-   const servicio = servicios[servicioActual];
-
-    if (!servicio) return;
-
-    fotoActual++;
-
-    if (fotoActual >= servicio.fotos.length) {
-
-        fotoActual = 0;
-
-    }
-
-    mostrarServicio();
+    document.getElementById("reloj").textContent =
+        horas + ":" + minutos;
 
 }
 
+
 //======================================
-// CAMBIAR SERVICIO
-//======================================
-function siguienteServicio() {
-
-    // Si solo hay una sala activa,
-    // seguimos mostrando siempre esa misma
-    if (servicios.length <= 1) {
-
-        servicioActual = 0;
-        fotoActual = 0;
-        escena = 0;
-
-        mostrarServicio();
-
-        return;
-
-    }
-
-
-    // Si hay dos o más servicios,
-    // pasamos al siguiente
-    servicioActual++;
-
-
-    if (servicioActual >= servicios.length) {
-
-        servicioActual = 0;
-
-    }
-
-
-    fotoActual = 0;
-    escena = 0;
-
-    mostrarServicio();
-
-}
-//======================================
-// FIREBASE
+// FIREBASE - ESCUCHAR SALAS
 //======================================
 
-onSnapshot(collection(db, "salas"), (snapshot) => {
+onSnapshot(
+    collection(db, "salas"),
+    (snapshot) => {
 
-    const nuevosServicios = [];
+        const nuevosServicios = [];
 
-    snapshot.forEach((documento) => {
 
-        const servicio = documento.data();
+        snapshot.forEach((documento) => {
 
-        // Solo añadimos las salas que estén activas
-        if (servicio.activo === true) {
+            const servicio =
+                documento.data();
 
-            servicio.sala =
-                documento.id === "sala1"
-                    ? "Sala 1"
-                    : "Sala 2";
 
-            nuevosServicios.push(servicio);
+            // Solo mostramos servicios activos
+            if (servicio.activo === true) {
+
+                nuevosServicios.push({
+
+                    ...servicio,
+
+                    sala:
+                        documento.id === "sala1"
+                            ? "Sala 1"
+                            : "Sala 2"
+
+                });
+
+            }
+
+        });
+
+
+        // Orden fijo: Sala 1 y Sala 2
+        nuevosServicios.sort((a, b) => {
+
+            return a.sala.localeCompare(
+                b.sala
+            );
+
+        });
+
+
+        // Guardamos los servicios
+        servicios = nuevosServicios;
+
+
+        // Si no hay servicios
+        if (servicios.length === 0) {
+
+            ocultarTransicion();
+
+            return;
 
         }
 
-    });
+
+        // Evitar una posición inválida
+        if (
+            servicioActual >= servicios.length
+        ) {
+
+            servicioActual = 0;
+
+        }
 
 
-    // Ordenar siempre: Sala 1 y después Sala 2
-    nuevosServicios.sort((a, b) => {
+        // Si cambiaron los datos en Firebase,
+        // mostramos el servicio actual,
+        // pero NO reiniciamos constantemente
+        if (fotoActual >=
+            (servicios[servicioActual].fotos?.length || 1)
+        ) {
 
-        return a.sala.localeCompare(b.sala);
+            fotoActual = 0;
 
-    });
-
-
-    // Actualizamos la lista de servicios
-    servicios = nuevosServicios;
-
-
-    // Si no hay ningún servicio activo
-    if (servicios.length === 0) {
-
-        return;
-
-    }
+        }
 
 
-    // Si el servicio que se estaba mostrando
-    // ya no existe, volvemos al primero
-    if (servicioActual >= servicios.length) {
-
-        servicioActual = 0;
+        mostrarServicio();
 
     }
 
+);
 
-    fotoActual = 0;
-    escena = 0;
-
-    // Mostrar el servicio actual
-    mostrarServicio();
-
-});
 
 //======================================
-// RELOJ
+// INICIO
 //======================================
 
 actualizarReloj();
 
-setInterval(actualizarReloj, 1000);
+setInterval(
+    actualizarReloj,
+    1000
+);
+
 
 //======================================
-// MOTOR
+// MOTOR DE PANTALLAS
 //======================================
 
 setInterval(() => {
 
-    if (servicios.length > 0) {
-
-        siguienteEscena();
-
-    }
+    siguienteEscena();
 
 }, 8000);
-
-
-

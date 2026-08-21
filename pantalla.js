@@ -211,16 +211,34 @@ function siguienteFoto() {
 //======================================
 // CAMBIAR SERVICIO
 //======================================
-
 function siguienteServicio() {
 
+    // Si solo hay una sala activa,
+    // seguimos mostrando siempre esa misma
+    if (servicios.length <= 1) {
+
+        servicioActual = 0;
+        fotoActual = 0;
+        escena = 0;
+
+        mostrarServicio();
+
+        return;
+
+    }
+
+
+    // Si hay dos o más servicios,
+    // pasamos al siguiente
     servicioActual++;
+
 
     if (servicioActual >= servicios.length) {
 
         servicioActual = 0;
 
     }
+
 
     fotoActual = 0;
     escena = 0;

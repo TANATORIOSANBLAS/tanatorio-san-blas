@@ -234,28 +234,60 @@ function siguienteServicio() {
 
 onSnapshot(collection(db, "salas"), (snapshot) => {
 
-    servicios = [];
+    const nuevosServicios = [];
 
-    snapshot.forEach((doc) => {
+    snapshot.forEach((documento) => {
 
-        const servicio = doc.data();
+        const servicio = documento.data();
 
-        if (servicio.activo) {
+        // Solo añadimos las salas que estén activas
+        if (servicio.activo === true) {
 
-            servicio.sala = doc.id === "sala1" ? "Sala 1" : "Sala 2";
+            servicio.sala =
+                documento.id === "sala1"
+                    ? "Sala 1"
+                    : "Sala 2";
 
-            servicios.push(servicio);
+            nuevosServicios.push(servicio);
 
         }
 
     });
 
-    if (servicios.length === 0) return;
 
-    servicioActual = 0;
+    // Ordenar siempre: Sala 1 y después Sala 2
+    nuevosServicios.sort((a, b) => {
+
+        return a.sala.localeCompare(b.sala);
+
+    });
+
+
+    // Actualizamos la lista de servicios
+    servicios = nuevosServicios;
+
+
+    // Si no hay ningún servicio activo
+    if (servicios.length === 0) {
+
+        return;
+
+    }
+
+
+    // Si el servicio que se estaba mostrando
+    // ya no existe, volvemos al primero
+    if (servicioActual >= servicios.length) {
+
+        servicioActual = 0;
+
+    }
+
+
     fotoActual = 0;
     escena = 0;
 
+    // Mostrar el servicio actual
     mostrarServicio();
 
 });
